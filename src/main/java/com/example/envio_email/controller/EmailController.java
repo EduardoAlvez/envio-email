@@ -32,4 +32,15 @@ public class EmailController {
         );
         return "Email HTML enviado!";
     }
+
+    @GetMapping("/enviar-html-img")
+    public String enviarHtmlImg() throws MessagingException {
+        emailService.enviarEmailComTemplateImagem(
+                "eduardo.alves@dcx.ufpb.br",
+                "Teste com HTML",
+                "Bem-vindo!",
+                "Este é um e-mail com template HTML com imagem usando Thymeleaf, by: dudu"
+        );
+        return "Email HTML enviado!";
+    }
 }

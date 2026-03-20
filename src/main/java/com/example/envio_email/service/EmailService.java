@@ -37,7 +37,7 @@ public class EmailService {
         context.setVariable("titulo", titulo);
         context.setVariable("mensagem", mensagem);
 
-        String corpoEmail = templateEngine.process("emailTemplate", context);
+        String corpoEmail = templateEngine.process("emailTemplate2", context);
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
@@ -47,7 +47,23 @@ public class EmailService {
         mimeMessageHelper.setText(corpoEmail, true);
 
         javaMailSender.send(mimeMessage);
+    }
 
+    public void enviarEmailComTemplateImagem(String destinatario, String assunto, String titulo, String mensagem) throws MessagingException {
+        Context context = new Context();
+        context.setVariable("titulo", titulo);
+        context.setVariable("mensagem", mensagem);
+        context.setVariable("logoUrl", "https://i.imgur.com/ebUmVMW.png");
 
+        String corpoEmail = templateEngine.process("emailTemplate3", context);
+
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+
+        mimeMessageHelper.setTo(destinatario);
+        mimeMessageHelper.setSubject(assunto);
+        mimeMessageHelper.setText(corpoEmail, true);
+
+        javaMailSender.send(mimeMessage);
     }
 }
