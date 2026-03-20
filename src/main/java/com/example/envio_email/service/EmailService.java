@@ -42,6 +42,7 @@ public class EmailService {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
 
+        mimeMessageHelper.setFrom(remetenteFixo);
         mimeMessageHelper.setTo(destinatario);
         mimeMessageHelper.setSubject(assunto);
         mimeMessageHelper.setText(corpoEmail, true);
@@ -60,6 +61,7 @@ public class EmailService {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
 
+        mimeMessageHelper.setFrom(remetenteFixo);
         mimeMessageHelper.setTo(destinatario);
         mimeMessageHelper.setSubject(assunto);
         mimeMessageHelper.setText(corpoEmail, true);
