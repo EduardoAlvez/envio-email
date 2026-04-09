@@ -1,5 +1,6 @@
 package com.example.envio_email.service;
 
+import com.example.envio_email.model.Usuario;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,5 +68,10 @@ public class EmailService {
         mimeMessageHelper.setText(corpoEmail, true);
 
         javaMailSender.send(mimeMessage);
+    }
+
+
+    public void enviarEmailVerificacao(Usuario usuario, String token){
+
     }
 }
