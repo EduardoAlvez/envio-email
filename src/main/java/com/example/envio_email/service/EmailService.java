@@ -1,6 +1,6 @@
 package com.example.envio_email.service;
 
-import com.example.envio_email.controller.dto.EmailAtivacaoDTO;
+import com.example.envio_email.controller.dto.EmailAtivacaoRequest;
 import com.example.envio_email.service.exceptions.FalhaEnvioEmailException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -16,6 +16,7 @@ import org.thymeleaf.context.Context;
 @Service
 public class EmailService {
 
+    public static final String ATIVE_SUA_CONTA = "Ative sua conta";
     @Value("${spring.mail.username}")
     private String remetenteFixo;
 
@@ -72,7 +73,7 @@ public class EmailService {
     }
 
 
-    public void enviarEmailAtivacao(EmailAtivacaoDTO dados){
+    public void enviarEmailAtivacao(EmailAtivacaoRequest dados){
         try{
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,true);
@@ -87,7 +88,7 @@ public class EmailService {
 
             mimeMessageHelper.setFrom(remetenteFixo);
             mimeMessageHelper.setTo(dados.getEmailDestino());
-            mimeMessageHelper.setSubject("Ative sua conta");
+            mimeMessageHelper.setSubject(ATIVE_SUA_CONTA);
             mimeMessageHelper.setText(corpoEmail, true);
 
             javaMailSender.send(mimeMessage);

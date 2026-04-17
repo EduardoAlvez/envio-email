@@ -1,12 +1,13 @@
 package com.example.envio_email.service;
 
-import com.example.envio_email.controller.dto.EmailAtivacaoDTO;
+import com.example.envio_email.controller.dto.EmailAtivacaoRequest;
 import com.example.envio_email.controller.dto.UsuarioRequest;
 import com.example.envio_email.controller.mapper.UsuarioMapper;
 import com.example.envio_email.model.TokenVerificador;
 import com.example.envio_email.model.Usuario;
 import com.example.envio_email.repository.TokenVerificadorRepository;
 import com.example.envio_email.service.exceptions.FalhaAtivacaoException;
+import com.example.envio_email.service.exceptions.UsuarioNuloException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -26,20 +27,20 @@ public class AuthService {
 
     public String registrar(UsuarioRequest usuarioRequest) {
 
-        if (usuarioRequest == null) return "null";
+        if (usuarioRequest == null) throw new UsuarioNuloException("Usuario nulo.");
         Usuario usuario = UsuarioMapper.toUsuario(usuarioRequest);
 
         TokenVerificador verificadorToken = new TokenVerificador(usuarioService.salvar(usuario));
 
-        EmailAtivacaoDTO emailAtivacaoDTO = new EmailAtivacaoDTO();
-        emailAtivacaoDTO.setNomeUsuario(usuario.getNome());
-        emailAtivacaoDTO.setLinkAtivacao("/verificarCadastro/" + verificadorToken.getToken());
-        emailAtivacaoDTO.setValidadeHoras(verificadorToken.getTEMPO());
-        emailAtivacaoDTO.setEmailDestino(usuario.getEmail());
+        EmailAtivacaoRequest emailAtivacaoRequest = new EmailAtivacaoRequest();
+        emailAtivacaoRequest.setNomeUsuario(usuario.getNome());
+        emailAtivacaoRequest.setLinkAtivacao("/verificarCadastro/" + verificadorToken.getToken());
+        emailAtivacaoRequest.setValidadeHoras(verificadorToken.getTEMPO());
+        emailAtivacaoRequest.setEmailDestino(usuario.getEmail());
 
 
         tokenVerificadorRepository.save(verificadorToken);
-        emailService.enviarEmailAtivacao(emailAtivacaoDTO);
+        emailService.enviarEmailAtivacao(emailAtivacaoRequest);
 
         return verificadorToken.getToken();
     }

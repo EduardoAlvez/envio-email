@@ -1,18 +1,42 @@
 package com.example.envio_email.controller.dto;
 
-public class EmailAtivacaoDTO {
+import jakarta.validation.constraints.*;
+import org.springframework.stereotype.Component;
+
+@Component
+public class EmailAtivacaoRequest {
+
+    @NotBlank(message = "Nome do usuário é obrigatório")
     private String nomeUsuario;
+
+    @NotBlank(message = "Link de ativação é obrigatório")
+    @Pattern(regexp = "^(http|https)://.*$", message = "Link de ativação deve ser uma URL válida")
     private String linkAtivacao;
+
+    @Min(value = 1, message = "Validade deve ser no mínimo 1 hora")
+    @Max(value = 168, message = "Validade não pode exceder 168 horas (7 dias)")
     private Integer validadeHoras;
+
+    @NotBlank(message = "Email destino é obrigatório")
+    @Email(message = "Email destino deve ser válido")
     private String emailDestino;
+
+    @NotBlank(message = "Link é obrigatório")
+    @Pattern(regexp = "^(http|https)://.*$", message = "Link de ativação deve ser uma URL válida")
     private String urlPoliticaPrivacidade;
+
+    @NotBlank(message = "Link é obrigatório")
+    @Pattern(regexp = "^(http|https)://.*$", message = "Link de ativação deve ser uma URL válida")
     private String urlTermosUso;
+
+    @NotBlank(message = "Link é obrigatório")
+    @Pattern(regexp = "^(http|https)://.*$", message = "Link de ativação deve ser uma URL válida")
     private String urlCentralAjuda;
 
     // Construtores, Getters e Setters
-    public EmailAtivacaoDTO() {}
+    public EmailAtivacaoRequest() {}
 
-    public EmailAtivacaoDTO(String nomeUsuario, String linkAtivacao, Integer validadeHoras, String emailDestino) {
+    public EmailAtivacaoRequest(String nomeUsuario, String linkAtivacao, Integer validadeHoras, String emailDestino) {
         this.nomeUsuario = nomeUsuario;
         this.linkAtivacao = linkAtivacao;
         this.validadeHoras = validadeHoras;

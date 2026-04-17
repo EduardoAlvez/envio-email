@@ -1,54 +1,29 @@
 package com.example.envio_email.controller;
 
+import com.example.envio_email.controller.dto.EmailAtivacaoRequest;
 import com.example.envio_email.controller.dto.EmailRequest;
 import com.example.envio_email.service.EmailService;
+import com.example.envio_email.service.exceptions.FalhaEnvioEmailException;
 import jakarta.mail.MessagingException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api/email/v1")
 public class EmailController {
 
-    @Autowired
-    private EmailService emailService;
+    private final EmailService emailService;
 
-
-    @GetMapping("/enviar")
-    public String enviar(){
-        emailService.enviarEmail("${spring.mail.username}",
-                "Cabeção",
-                "Olá! Este é um e-mail enviado pela API de Eduardo automaticamente.");
-
-        return "Email enviado";
-    }
-
-    @GetMapping("/enviar-html")
-    public String enviarHtml() throws MessagingException {
-        emailService.enviarEmailComTemplate(
-                "${spring.mail.username}",
-                "Teste com HTML",
-                "Bem-vindo!",
-                "Este é um e-mail com template HTML usando Thymeleaf, by: dudu"
-        );
-        return "Email HTML enviado!";
-    }
-
-    @GetMapping("/enviar-html-img")
-    public String enviarHtmlImg() throws MessagingException {
-        emailService.enviarEmailComTemplateImagem(
-                "${spring.mail.username}",
-                "Teste com HTML",
-                "Bem-vindo!",
-                "Este é um e-mail com template HTML com imagem usando Thymeleaf, by: dudu"
-        );
-        return "Email HTML enviado!";
+    public EmailController(EmailService emailService) {
+        this.emailService = emailService;
     }
 
     @PostMapping("/enviar-email")
-    public String enviarEmail(@RequestBody EmailRequest request) throws MessagingException {
+    public ResponseEntity<String> enviarEmail(@RequestBody EmailRequest request) throws MessagingException {
 
         emailService.enviarEmailComTemplateImagem(
                 request.destinatario(),
@@ -56,6 +31,55 @@ public class EmailController {
                 request.titulo(),
                 request.mensagem()
         );
-        return "Email enviado com sucesso!";
+        return ResponseEntity.status(HttpStatus.OK).body("Email HTML com imagem enviado!");
     }
+
+    @PostMapping("/enviar-html-verificacao")
+    public ResponseEntity<String> enviarEmailValidacao(@RequestBody EmailAtivacaoRequest dados){
+
+        try{
+            emailService.enviarEmailAtivacao(dados);
+            return ResponseEntity.status(HttpStatus.OK).body("Email de validação enviado com sucesso!");
+        }catch (FalhaEnvioEmailException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+
+        }
+    }
+
+
+    //APRENDIZADO
+/*
+
+    @GetMapping("/enviar")
+    public ResponseEntity<String> enviar(){
+        emailService.enviarEmail("${spring.mail.username}",
+                "Cabeção",
+                "Olá! Este é um e-mail enviado pela API de Eduardo automaticamente.");
+
+        return ResponseEntity.status(HttpStatus.OK).body("Email enviado");
+    }
+
+    @GetMapping("/enviar-html")
+    public ResponseEntity<String> enviarHtml() throws MessagingException {
+        emailService.enviarEmailComTemplate(
+                "${spring.mail.username}",
+                "Teste com HTML",
+                "Bem-vindo!",
+                "Este é um e-mail com template HTML usando Thymeleaf, by: dudu"
+        );
+        return ResponseEntity.status(HttpStatus.OK).body("Email HTML enviado!");
+    }
+
+    @GetMapping("/enviar-html-img")
+    public ResponseEntity<String> enviarHtmlImg() throws MessagingException {
+        emailService.enviarEmailComTemplateImagem(
+                "${spring.mail.username}",
+                "Teste com HTML",
+                "Bem-vindo!",
+                "Este é um e-mail com template HTML com imagem usando Thymeleaf, by: dudu"
+        );
+        return ResponseEntity.status(HttpStatus.OK).body("Email HTML com imagem enviado!");
+    }
+*/
+
 }
