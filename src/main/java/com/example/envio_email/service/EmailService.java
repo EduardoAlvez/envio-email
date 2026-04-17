@@ -1,6 +1,7 @@
 package com.example.envio_email.service;
 
-import com.example.envio_email.model.Usuario;
+import com.example.envio_email.controller.dto.EmailAtivacaoDTO;
+import com.example.envio_email.service.exceptions.FalhaEnvioEmailException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +72,29 @@ public class EmailService {
     }
 
 
-    public void enviarEmailVerificacao(Usuario usuario, String token){
+    public void enviarEmailAtivacao(EmailAtivacaoDTO dados){
+        try{
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,true);
+
+            // Configurar o contexto do Thymeleaf
+            Context context = new Context();
+            context.setVariable("nomeUsuario", dados.getNomeUsuario());
+            context.setVariable("linkAtivacao", dados.getLinkAtivacao());
+            context.setVariable("validadeHoras", dados.getValidadeHoras());
+
+            String corpoEmail = templateEngine.process("emailAtivacaoTemplate", context);
+
+            mimeMessageHelper.setFrom(remetenteFixo);
+            mimeMessageHelper.setTo(dados.getEmailDestino());
+            mimeMessageHelper.setSubject("Ative sua conta");
+            mimeMessageHelper.setText(corpoEmail, true);
+
+            javaMailSender.send(mimeMessage);
+
+        } catch (MessagingException e) {
+            throw new FalhaEnvioEmailException("Erro ao enviar email de ativação", e);
+        }
 
     }
 }

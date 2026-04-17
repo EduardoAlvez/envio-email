@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{activation.email.title}">Ativação de Conta</title>
+    <style>
+        /* Estilos para compatibilidade com a maioria dos clientes de email */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f7;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        /* Header com gradiente */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            font-size: 28px;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.9);
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        /* Corpo do email */
+        .content {
+            padding: 40px 30px;
+        }
+
+        .greeting {
+            font-size: 18px;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            color: #555555;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .message strong {
+            color: #667eea;
+        }
+
+        /* Botão de ativação */
+        .button-container {
+            text-align: center;
+            margin: 35px 0;
+        }
+
+        .activation-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .activation-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Link alternativo (caso o botão não funcione) */
+        .alternative-link {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .alternative-link p {
+            color: #666666;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .alternative-link a {
+            color: #667eea;
+            word-break: break-all;
+            font-size: 13px;
+        }
+
+        /* Informações adicionais */
+        .info-box {
+            background-color: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px 20px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+
+        .info-box p {
+            color: #555555;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .info-box small {
+            color: #888888;
+            display: block;
+            margin-top: 8px;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #f8f9fa;
+            padding: 25px 30px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .footer p {
+            color: #888888;
+            font-size: 12px;
+            margin: 5px 0;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        /* Responsividade */
+        @media (max-width: 600px) {
+            .content {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .activation-button {
+                display: block;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Header com título -->
+    <div class="header">
+        <h1>✨ Ative sua Conta</h1>
+        <p>Estamos muito felizes em ter você conosco!</p>
+    </div>
+
+    <!-- Conteúdo principal com Thymeleaf -->
+    <div class="content">
+        <!-- Usando th:utext para evitar XSS e aceitar caracteres especiais -->
+        <div class="greeting" th:utext="'Olá, ' + ${nomeUsuario} + '!'">
+            Olá, Usuário!
+        </div>
+
+        <div class="message">
+            Para começar a usar todos os recursos da nossa plataforma, precisamos confirmar o seu endereço de email.
+            Clique no botão abaixo para ativar sua conta em apenas um clique:
+        </div>
+
+        <!-- Botão de ativação com link dinâmico usando Thymeleaf -->
+        <div class="button-container">
+            <a th:href="${linkAtivacao}" class="activation-button" target="_blank">
+                🔓 Ativar minha conta
+            </a>
+        </div>
+
+        <!-- Link alternativo (caso o botão não funcione) -->
+        <div class="alternative-link">
+            <p>Se o botão acima não funcionar, copie e cole o link abaixo no seu navegador:</p>
+            <a th:href="${linkAtivacao}" th:text="${linkAtivacao}" target="_blank">https://seusite.com/ativar-conta?token=exemplo</a>
+        </div>
+
+        <!-- Informações importantes com condicional Thymeleaf -->
+        <div class="info-box" th:if="${validadeHoras != null}">
+            <p>
+                ⏰ <strong>Este link é válido por <span th:text="${validadeHoras}">24</span> horas.</strong>
+                Após esse período, será necessário solicitar um novo email de ativação.
+            </p>
+            <small>Se você não criou uma conta conosco, ignore este email. Nenhuma ação será necessária.</small>
+        </div>
+
+        <!-- Informações sem validade (fallback) -->
+        <div class="info-box" th:unless="${validadeHoras != null}">
+            <p>⏰ <strong>Este link possui validade limitada.</strong> Após expirar, solicite um novo email de ativação.</p>
+            <small>Se você não criou uma conta conosco, ignore este email. Nenhuma ação será necessária.</small>
+        </div>
+
+        <!-- Dica de segurança -->
+        <div class="info-box" style="background-color: #fff8e7; border-left-color: #ffc107;">
+            <p>🔒 <strong>Por segurança:</strong> Nunca compartilhe este link com ninguém. Ele dá acesso direto à ativação da sua conta.</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p th:text="'© ' + ${#dates.format(#dates.createNow(), 'yyyy')} + ' Sua Empresa. Todos os direitos reservados.'">
+            © Sua Empresa. Todos os direitos reservados.
+        </p>
+        <p>Este é um email automático, por favor não responda.</p>
+<!--        <p>-->
+<!--            <a href="#" th:href="${urlPoliticaPrivacidade}">Política de Privacidade</a> •-->
+<!--            <a href="#" th:href="${urlTermosUso}">Termos de Uso</a> •-->
+<!--            <a href="#" th:href="${urlCentralAjuda}">Central de Ajuda</a>-->
+<!--        </p>-->
+    </div>
+</div>
+</body>
+</html>

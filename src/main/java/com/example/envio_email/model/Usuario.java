@@ -13,8 +13,8 @@ public class Usuario {
     private Long id;
 
     private String nome;
-    private String email;
     private int senha;
+    private String email;
 
     private boolean enabled = false;
 
