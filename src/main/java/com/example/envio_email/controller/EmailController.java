@@ -2,9 +2,14 @@ package com.example.envio_email.controller;
 
 import com.example.envio_email.controller.dto.EmailAtivacaoRequest;
 import com.example.envio_email.controller.dto.EmailRequest;
+import com.example.envio_email.documentation.EnvioEmailAtivacaoDoc;
 import com.example.envio_email.service.EmailService;
 import com.example.envio_email.service.exceptions.FalhaEnvioEmailException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +27,13 @@ public class EmailController {
         this.emailService = emailService;
     }
 
+    @Operation(
+            summary = "Envia email simples",
+            description = "Envia um email simples com imagem para o destinatário informado"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Email enviado com sucesso")
+    })
     @PostMapping("/enviar-email")
     public ResponseEntity<String> enviarEmail(@RequestBody EmailRequest request) throws MessagingException {
 
@@ -35,7 +47,8 @@ public class EmailController {
     }
 
     @PostMapping("/enviar-html-verificacao")
-    public ResponseEntity<String> enviarEmailValidacao(@RequestBody EmailAtivacaoRequest dados){
+    @EnvioEmailAtivacaoDoc
+    public ResponseEntity<String> enviarEmailValidacao(@Valid @RequestBody EmailAtivacaoRequest dados){
 
         try{
             emailService.enviarEmailAtivacao(dados);

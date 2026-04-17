@@ -4,7 +4,6 @@ import com.example.envio_email.controller.dto.EmailAtivacaoRequest;
 import com.example.envio_email.service.exceptions.FalhaEnvioEmailException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -20,10 +19,15 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String remetenteFixo;
 
-    @Autowired
-    private JavaMailSender javaMailSender;
-    @Autowired
-    private TemplateEngine templateEngine;
+
+    private final JavaMailSender javaMailSender;
+
+    private final TemplateEngine templateEngine;
+
+    public EmailService(JavaMailSender javaMailSender, TemplateEngine templateEngine) {
+        this.javaMailSender = javaMailSender;
+        this.templateEngine = templateEngine;
+    }
 
     public void enviarEmail(String destinatario, String assunto, String mensagem){
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();

@@ -1,9 +1,22 @@
 package com.example.envio_email.controller.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
-import org.springframework.stereotype.Component;
 
-@Component
+@Schema(
+        name = "EmailAtivacaoRequest",
+        description = "DTO para requisição de envio de email de ativação de conta",
+        example = """
+        {
+            "nomeUsuario": "João Silva",
+            "emailDestino": "joao.silva@email.com",
+            "linkAtivacao": "https://meusite.com/ativar/abc-123-def",
+            "validadeHoras": 24,
+            "urlPoliticaPrivacidade": "https://meusite.com/politica",
+            "urlTermosUso": "https://meusite.com/termos",
+            "urlCentralAjuda": "https://meusite.com/ajuda"
+        }
+        """)
 public class EmailAtivacaoRequest {
 
     @NotBlank(message = "Nome do usuário é obrigatório")
@@ -13,6 +26,7 @@ public class EmailAtivacaoRequest {
     @Pattern(regexp = "^(http|https)://.*$", message = "Link de ativação deve ser uma URL válida")
     private String linkAtivacao;
 
+    @NotNull(message = "Validade em horas é obrigatória")
     @Min(value = 1, message = "Validade deve ser no mínimo 1 hora")
     @Max(value = 168, message = "Validade não pode exceder 168 horas (7 dias)")
     private Integer validadeHoras;
@@ -21,16 +35,13 @@ public class EmailAtivacaoRequest {
     @Email(message = "Email destino deve ser válido")
     private String emailDestino;
 
-    @NotBlank(message = "Link é obrigatório")
-    @Pattern(regexp = "^(http|https)://.*$", message = "Link de ativação deve ser uma URL válida")
+    @Pattern(regexp = "^(http|https)://.*$", message = "URL da política de privacidade deve ser válida")
     private String urlPoliticaPrivacidade;
 
-    @NotBlank(message = "Link é obrigatório")
-    @Pattern(regexp = "^(http|https)://.*$", message = "Link de ativação deve ser uma URL válida")
+    @Pattern(regexp = "^(http|https)://.*$", message = "URL dos termos de uso deve ser válida")
     private String urlTermosUso;
 
-    @NotBlank(message = "Link é obrigatório")
-    @Pattern(regexp = "^(http|https)://.*$", message = "Link de ativação deve ser uma URL válida")
+    @Pattern(regexp = "^(http|https)://.*$", message = "URL da central de ajuda deve ser válida")
     private String urlCentralAjuda;
 
     // Construtores, Getters e Setters
@@ -100,5 +111,15 @@ public class EmailAtivacaoRequest {
 
     public void setUrlCentralAjuda(String urlCentralAjuda) {
         this.urlCentralAjuda = urlCentralAjuda;
+    }
+
+    @Override
+    public String toString() {
+        return "EmailAtivacaoRequest{" +
+                "nomeUsuario='" + nomeUsuario + '\'' +
+                ", emailDestino='" + emailDestino + '\'' +
+                ", validadeHoras=" + validadeHoras +
+                ", linkAtivacao='[PROTECTED]'" +
+                '}';
     }
 }

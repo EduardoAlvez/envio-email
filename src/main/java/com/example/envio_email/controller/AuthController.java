@@ -22,13 +22,18 @@ public class AuthController {
 
     @PostMapping(value = "/resgitroUsuario")
     public ResponseEntity<String> cadastrarUsuario(@Valid @RequestBody UsuarioRequest usuarioRequest){
-        try{
-            return ResponseEntity.status(HttpStatus.OK).body(authService.registrar(usuarioRequest));
-        }catch (UsuarioNuloException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário nulo.");
+        try {
+            String token = authService.registrar(usuarioRequest);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body("Usuário registrado com sucesso! Verifique seu email para ativar a conta, token:" + token);
+
+        } catch (UsuarioNuloException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao registrar usuário: " + e.getMessage());
         }
     }
-
 
     @GetMapping(value = "/verificarCadastro/{token}")
     public ResponseEntity<String> verificarRegistro(@PathVariable("token") String token){

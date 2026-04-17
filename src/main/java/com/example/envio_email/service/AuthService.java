@@ -26,21 +26,39 @@ public class AuthService {
     }
 
     public String registrar(UsuarioRequest usuarioRequest) {
+        // Validação
+        if (usuarioRequest == null) {
+            throw new UsuarioNuloException("Usuario nulo.");
+        }
 
-        if (usuarioRequest == null) throw new UsuarioNuloException("Usuario nulo.");
         Usuario usuario = UsuarioMapper.toUsuario(usuarioRequest);
+        Usuario usuarioSalvo = usuarioService.salvar(usuario);
 
-        TokenVerificador verificadorToken = new TokenVerificador(usuarioService.salvar(usuario));
+        // Criar token com tempo personalizado (vindo da requisição)
+        int tempoExpiracao = usuarioRequest.tempoExpiracaoHoras() != null ?
+                usuarioRequest.tempoExpiracaoHoras() : 24;
 
-        EmailAtivacaoRequest emailAtivacaoRequest = new EmailAtivacaoRequest();
-        emailAtivacaoRequest.setNomeUsuario(usuario.getNome());
-        emailAtivacaoRequest.setLinkAtivacao("/verificarCadastro/" + verificadorToken.getToken());
-        emailAtivacaoRequest.setValidadeHoras(verificadorToken.getTEMPO());
-        emailAtivacaoRequest.setEmailDestino(usuario.getEmail());
+        TokenVerificador verificadorToken = new TokenVerificador(usuarioSalvo, tempoExpiracao);
 
+        // Preparar email de ativação
+        EmailAtivacaoRequest emailRequest = new EmailAtivacaoRequest();
+        emailRequest.setNomeUsuario(usuarioSalvo.getNome());
 
+        // URL completa do link de ativação
+        String linkAtivacao = "https://seusite.com/verificarCadastro/" + verificadorToken.getToken();
+        emailRequest.setLinkAtivacao(linkAtivacao);
+
+        emailRequest.setValidadeHoras(verificadorToken.getTempo());
+        emailRequest.setEmailDestino(usuarioSalvo.getEmail());
+
+        // Configurar URLs do footer (opcional, podem vir da requisição também)
+        emailRequest.setUrlPoliticaPrivacidade("https://seusite.com/politica-privacidade");
+        emailRequest.setUrlTermosUso("https://seusite.com/termos-uso");
+        emailRequest.setUrlCentralAjuda("https://seusite.com/ajuda");
+
+        // Salvar token e enviar email
         tokenVerificadorRepository.save(verificadorToken);
-        emailService.enviarEmailAtivacao(emailAtivacaoRequest);
+        emailService.enviarEmailAtivacao(emailRequest);
 
         return verificadorToken.getToken();
     }

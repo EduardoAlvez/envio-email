@@ -14,18 +14,20 @@ public class TokenVerificador {
 
     private String token;
     private LocalDateTime expiryDate;
-    private final int TEMPO = 24;
+    private Integer tempo;
 
     @OneToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    public TokenVerificador() {}
-
     public TokenVerificador(Usuario usuario) {
+        this(usuario, 24);
+    }
+    public TokenVerificador(Usuario usuario, int tempo) {
         this.usuario = usuario;
+        this.tempo = tempo;
         this.token = UUID.randomUUID().toString();
-        this.expiryDate = LocalDateTime.now().plusHours(TEMPO); // expira em 24h
+        this.expiryDate = LocalDateTime.now().plusHours(tempo); // expira em 24h
     }
 
     public boolean isExpired() {
@@ -44,7 +46,7 @@ public class TokenVerificador {
         return id;
     }
 
-    public int getTEMPO() {
-        return TEMPO;
+    public int getTempo() {
+        return tempo;
     }
 }
